@@ -2,6 +2,7 @@
 package timeutil
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -117,4 +118,45 @@ func SetYear(nYear int) string {
 	year = now.AddDate(nYear, 0, 0)
 	sYear := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year.Year(), year.Month(), year.Day(), year.Hour(), year.Minute(), year.Second())
 	return sYear
+}
+
+//string to time
+func ConvertStrToTime(sTime string) (time.Time, error) {
+
+	tm, err := time.Parse("2006-01-02 15:04:05", sTime)
+	if err == nil {
+		return tm, nil
+	}
+
+	return time.Now(), errors.New("")
+}
+
+func SubstringTime(sStart, sEnd string) float64 {
+
+	starttm, _ := time.Parse("2006-01-02 15:04:05", sStart)
+	endtm, _ := time.Parse("2006-01-02 15:04:05", sEnd)
+	diff := endtm.Sub(starttm)
+
+	//hour := int(diff.Hours())
+	//minutes := int(diff.Minutes())
+	//seconds := int(diff.Seconds())
+	//days := int(diff.Hours() / 24)
+	//fmt.Println("시:" + fmt.Sprintf("%d", hour))
+	//fmt.Println("분:" + fmt.Sprintf("%d", minutes))
+	//fmt.Println("초:" + fmt.Sprintf("%d", seconds))
+	//fmt.Println("일:" + fmt.Sprintf("%d", days))
+
+	//minutes := int(diff.Seconds() / 60)
+	//hour := int(minutes / 60)
+	//fmt.Println("초를 분으로 :" + fmt.Sprintf("%d", minutes))
+	//fmt.Println("분를 시으로 :" + fmt.Sprintf("%d", hour))
+
+	return diff.Seconds()
+}
+
+func SubtimeTime(sStart, sEnd time.Time) float64 {
+
+	diff := sEnd.Sub(sStart)
+
+	return diff.Seconds()
 }

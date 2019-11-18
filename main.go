@@ -292,6 +292,27 @@ func getfileutil() {
 		fmt.Println("is exist")
 	}
 
+	//폴더 전체
+	//fileutil.DeleteFile("c:\\folder")
+
+	//파일 삭제
+	//fileutil.DeleteFile("c:\\main.go")
+
+	//텍스트 파일 라인별 읽기
+	//fileutil.ReadLineFile("c:\\main.go")
+
+	//전체 폴더 리스트
+	folderList := fileutil.FindDirList("C:\\Go")
+	for _, f := range folderList {
+		fmt.Println(f)
+	}
+
+	//전체 파일 리스트
+	fileList := fileutil.FindFileList("C:\\Go")
+	for _, f := range fileList {
+		fmt.Println(f)
+	}
+
 }
 
 func getiniutil() {

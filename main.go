@@ -3,6 +3,7 @@ package main
 
 import (
 	"Daseonglib/dictutil"
+	"Daseonglib/downloadutil"
 	"Daseonglib/fileutil"
 	"Daseonglib/iniutil"
 	"Daseonglib/iniwinutil"
@@ -348,7 +349,20 @@ func getziputil() {
 	ziputil.UnZipfile("C:\\daeseongf.zip", "C:\\daeseongf")
 }
 
+func getdownloadutil() {
+
+	contents, _ := downloadutil.GetWebPage("https://github.com/ImDaeseong")
+	fmt.Println(contents)
+
+	sSavePath := "c:"
+	sUrl := "http://content.screencast.com/users/JamesMontemagno/folders/Jing/media/23c1dd13-333a-459e-9e23-c3784e7cb434/2016-06-02_1049.png"
+	filename := downloadutil.GetDownloadFile(sUrl, sSavePath)
+	fmt.Println(filename)
+}
+
 func main() {
+
+	//getdownloadutil()
 
 	//getziputil()
 

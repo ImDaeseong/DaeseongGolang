@@ -9,6 +9,7 @@ import (
 	"Daseonglib/jsonutil"
 	"Daseonglib/stringutil"
 	"Daseonglib/timeutil"
+	"Daseonglib/ziputil"
 	"fmt"
 	_ "registryutil" //internal 파일 경로는 Go\src\registryutil
 	"strconv"
@@ -338,7 +339,18 @@ func getiniutil() {
 
 }
 
+func getziputil() {
+
+	ziputil.Zipfile("C:\\Go\\src\\daeseong", "c:\\daeseong.zip")
+	ziputil.Zipfile("C:\\Go\\src\\daeseong\\daeseong.exe", "C:\\daeseongf.zip")
+
+	ziputil.UnZipfile("C:\\daeseong.zip", "C:\\daeseong")
+	ziputil.UnZipfile("C:\\daeseongf.zip", "C:\\daeseongf")
+}
+
 func main() {
+
+	//getziputil()
 
 	//getdict()
 

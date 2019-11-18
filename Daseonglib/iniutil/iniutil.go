@@ -3,8 +3,9 @@ package iniutil
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
-	_ "sort"
+	"sort"
 	"strings"
 )
 
@@ -15,10 +16,74 @@ type iniTag struct {
 }
 
 var (
-	iniList = []iniTag{}
+	iMap     map[string]iniTag
+	isecMap  map[string]string
+	Index    int = 0
+	secIndex int = 0
 )
 
+func GetiniList() {
+
+	for key, _ := range iMap {
+		sResult := fmt.Sprintf("%s %s %s %s", key, iMap[key].sSection, iMap[key].sKeyname, iMap[key].sKeyValue)
+		fmt.Println(sResult)
+	}
+}
+
+func Removeini(sSection string) {
+
+	var sSect string
+
+	//[] 제거
+	Replacer := strings.NewReplacer(
+		"[", "",
+		"]", "",
+	)
+
+	for key, _ := range iMap {
+
+		sSect = Replacer.Replace(iMap[key].sSection)
+		if sSect == sSection {
+			delete(iMap, key)
+		}
+	}
+}
+
+func Addini(skey, sSection, sKeyname, sKeyValue string) {
+	iMap[skey] = iniTag{sSection, sKeyname, sKeyValue}
+}
+
+func sortmap() {
+
+	//key sort
+	ikeys := make([]string, 0, len(isecMap))
+	for ik := range isecMap {
+		ikeys = append(ikeys, ik)
+	}
+	sort.Strings(ikeys)
+
+	//data sort
+	keys := make([]string, 0, len(iMap))
+	for k := range iMap {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+}
+
+func writeText(file *os.File, sText string) bool {
+
+	n, err := io.WriteString(file, sText)
+	if err != nil {
+		fmt.Println(n, err)
+		return false
+	}
+	return true
+}
+
 func Getloadini(sPath string) bool {
+
+	iMap = make(map[string]iniTag)
+	isecMap = make(map[string]string)
 
 	f, err := os.OpenFile(sPath, os.O_RDONLY, 0644)
 	if err != nil {
@@ -36,25 +101,63 @@ func Getloadini(sPath string) bool {
 
 			sTag = line
 
+			skey := fmt.Sprintf("%d", secIndex)
+
+			isecMap[skey] = sTag
+
+			secIndex++
+
 		} else if strings.Contains(line, "=") {
 
 			parts := strings.SplitN(line, "=", 2)
 			//fmt.Printf("%s %s %s\n", sTag, parts[0], parts[1])
 
-			ini := iniTag{}
-			ini.sSection = sTag
-			ini.sKeyname = parts[0]
-			ini.sKeyValue = parts[1]
-			iniList = append(iniList, ini)
+			skey := fmt.Sprintf("%d", Index)
+
+			Addini(skey, sTag, parts[0], parts[1])
+
+			Index++
 		}
 	}
 
-	/*
-		for _, item := range iniList {
-			sResult := fmt.Sprintf("%s %s %s", item.sSection, item.sKeyname, item.sKeyValue)
-			fmt.Println(sResult)
+	return true
+}
+
+func Setloadini(sPath string) bool {
+
+	file, err := os.OpenFile(sPath, os.O_RDWR|os.O_APPEND, 0660)
+	if os.IsNotExist(err) {
+		file, err = os.Create(sPath)
+	}
+	defer file.Close()
+
+	if err != nil {
+		return false
+	}
+
+	//sort
+	sortmap()
+
+	for ikey, _ := range isecMap {
+
+		//key write
+		sResult := fmt.Sprintf("%s\r\n", isecMap[ikey])
+		writeText(file, sResult)
+
+		//data write
+		for key, _ := range iMap {
+
+			if isecMap[ikey] == iMap[key].sSection {
+
+				sResult := fmt.Sprintf("%s=%s\r\n", iMap[key].sKeyname, iMap[key].sKeyValue)
+				writeText(file, sResult)
+			}
 		}
-	*/
+
+		//key end
+		sResult = fmt.Sprintf("\r\n")
+		writeText(file, sResult)
+	}
 
 	return true
 }
@@ -62,42 +165,57 @@ func Getloadini(sPath string) bool {
 func GetProfileString(sSection string, sKeyname string) string {
 
 	var sResult string = ""
-	var sSect string = ""
+	var sSect string
 
+	//[] 제거
 	Replacer := strings.NewReplacer(
 		"[", "",
 		"]", "",
 	)
 
-	for _, item := range iniList {
+	for key, _ := range iMap {
 
-		//[] 제거
-		sSect = Replacer.Replace(item.sSection)
+		sSect = Replacer.Replace(iMap[key].sSection)
+		if sSect == sSection && sKeyname == iMap[key].sKeyname {
+			sResult = iMap[key].sKeyValue
+			break
+		}
+	}
+	return sResult
+}
 
-		if sSect == sSection && item.sKeyname == sKeyname {
+func SetProfileString(sSection string, sKeyname string, sKeyValue string) {
 
-			sResult = item.sKeyValue
+	var sResultkey string = ""
+	var sSect string
+
+	//[] 제거
+	Replacer := strings.NewReplacer(
+		"[", "",
+		"]", "",
+	)
+
+	for key, _ := range iMap {
+
+		sSect = Replacer.Replace(iMap[key].sSection)
+		if sSect == sSection && sKeyname == iMap[key].sKeyname {
+			sResultkey = key
 			break
 		}
 	}
 
-	return sResult
-}
+	if sResultkey != "" {
 
-func SetProfileString(sSection string, sKeyname string, sKeyValue string) bool {
+		iMap[sResultkey] = iniTag{"[" + sSection + "]", sKeyname, sKeyValue}
 
-	sTag := fmt.Sprintf("[%s]", sSection)
+	} else {
 
-	ini := iniTag{}
-	ini.sSection = sTag
-	ini.sKeyname = sKeyname
-	ini.sKeyValue = sKeyValue
-	iniList = append(iniList, ini)
+		skey := fmt.Sprintf("%d", secIndex)
+		isecMap[skey] = "[" + sSection + "]"
+		secIndex++
 
-	for _, item := range iniList {
-		sResult := fmt.Sprintf("%s %s %s", item.sSection, item.sKeyname, item.sKeyValue)
-		fmt.Println(sResult)
+		skey = fmt.Sprintf("%d", Index)
+		iMap[skey] = iniTag{"[" + sSection + "]", sKeyname, sKeyValue}
+		Index++
 	}
-
-	return true
 }

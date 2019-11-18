@@ -2,6 +2,8 @@
 package main
 
 import (
+	"Daseonglib/dictutil"
+	"Daseonglib/fileutil"
 	"Daseonglib/iniutil"
 	"Daseonglib/iniwinutil"
 	"Daseonglib/jsonutil"
@@ -224,33 +226,127 @@ func gettimeutil() {
 	fmt.Println("분를 시으로 :" + fmt.Sprintf("%d", hour))
 }
 
+func getdict() {
+
+	dictutil.InitWords()
+
+	dictutil.AddWords("lipas", "바퀴벌레")
+	dictutil.AddWords("muram", "우울한우울한")
+	dictutil.AddWords("persaingan", "경쟁")
+	dictutil.AddWords("rawit", "작은")
+
+	if dictutil.IsDictionary("lipas") {
+		fmt.Println("is exist")
+	}
+
+	dictutil.RemoveWords("lipas")
+
+	dictutil.AddWords("tikung", "커브길")
+
+	dictutil.UpdateWords("muram", "우울한")
+
+	dictutil.GetWordsList()
+}
+
+func getdicttag() {
+
+	dictutil.InitTags()
+
+	dictutil.AddTags("lipas", "cockroach", "lipas", "바퀴벌레")
+	dictutil.AddTags("muram", "gloomy1", "muram1", "우울한우울한")
+	dictutil.AddTags("persaingan", "competition", "persaingan", "경쟁")
+	dictutil.AddTags("rawit", "small", "rawit", "작은")
+
+	if dictutil.IsTags("lipas") {
+		fmt.Println("is exist")
+	}
+
+	dictutil.RemoveTags("lipas")
+
+	dictutil.AddTags("sembelit", "constipation", "sembelit", "변비")
+
+	dictutil.UpdateTags("muram", "gloomy", "muram", "우울한")
+
+	dictutil.GetTagsList()
+}
+
+func getfileutil() {
+
+	if fileutil.IsDirExist("D:\\DaeseongGolang\\src\\Daseonglib\\fileutil") {
+		fmt.Println("is exist")
+	}
+
+	if fileutil.IsDirExist("D:\\DaeseongGolang\\src\\Daseonglib\\fileutil\\fileutil.go") {
+		fmt.Println("is exist")
+	}
+
+	sfilepath := fileutil.GetFilePath("D:\\DaeseongGolang\\src\\Daseonglib\\fileutil\\fileutil.go")
+	fmt.Println(sfilepath)
+
+	sfilename := fileutil.GetFileName("D:\\DaeseongGolang\\src\\Daseonglib\\fileutil\\fileutil.go")
+	fmt.Println(sfilename)
+
+	if fileutil.IsDir("D:\\DaeseongGolang\\src\\Daseonglib\\fileutil") {
+		fmt.Println("is exist")
+	}
+
+}
+
 func getiniutil() {
+
+	/*
+		//------gameinfo.ini 내용
+		[GameList]
+		GameCount=3
+		Gamekey0=Gamename0
+		Gamekey1=Gamename1
+		Gamekey2=Gamename2
+		[Gamename0]
+		GameItem=com.kakaogames.moonlight0
+		[Gamename1]
+		GameItem=com.kakaogames.moonlight1
+		[Gamename2]
+		GameItem=com.kakaogames.moonlight2
+	*/
 
 	iniutil.Getloadini("c:\\gameinfo.ini")
 
-	/*
-		nReadCount := iniutil.GetProfileString("GameList", "GameCount")
-		nCount, err := strconv.Atoi(nReadCount)
-		if err == nil {
+	nReadCount := iniutil.GetProfileString("GameList", "GameCount")
+	nCount, err := strconv.Atoi(nReadCount)
+	if err == nil {
 
-			for i := 0; i < nCount; i++ {
+		for i := 0; i < nCount; i++ {
 
-				Gamekey := fmt.Sprintf("Gamekey%d", i)
-				Gamename := iniutil.GetProfileString("GameList", Gamekey)
-				//fmt.Println(Gamename)
-				GameItem := iniutil.GetProfileString(Gamename, "GameItem")
-				fmt.Println(GameItem)
-			}
+			Gamekey := fmt.Sprintf("Gamekey%d", i)
+			Gamename := iniutil.GetProfileString("GameList", Gamekey)
+			GameItem := iniutil.GetProfileString(Gamename, "GameItem")
+
+			fmt.Println("[" + Gamekey + "]" + Gamename + " - " + GameItem)
 		}
+	}
+
+	/*
+		iniutil.Removeini("GameList")
+		iniutil.GetiniList()
 	*/
 
 	iniutil.SetProfileString("GameList", "GameCount", "4")
+	iniutil.SetProfileString("GameList", "Gamekey3", "Gamename3")
+	iniutil.SetProfileString("Gamename3", "GameItem", "com.kakaogames.moonlight3")
+	iniutil.GetiniList()
+	iniutil.Setloadini("c:\\gameinfo_temp.ini")
 
 }
 
 func main() {
 
-	getiniutil()
+	//getdict()
+
+	//getdicttag()
+
+	//getfileutil()
+
+	//getiniutil()
 
 	//getjsonutil()
 

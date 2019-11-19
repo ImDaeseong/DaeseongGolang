@@ -10,9 +10,10 @@ import (
 	"Daseonglib/jsonutil"
 	"Daseonglib/sortutil"
 	"Daseonglib/stringutil"
+	"Daseonglib/tickerutil"
 	"Daseonglib/timeutil"
+	"Daseonglib/winapiutil"
 	"Daseonglib/ziputil"
-
 	"fmt"
 	_ "registryutil" //internal 파일 경로는 Go\src\registryutil
 	"strconv"
@@ -390,9 +391,58 @@ func getsortutil() {
 	sortutil.Getgame_sMap()
 }
 
+func gettickerutil() {
+
+	//tickerutil.StopWatch_second(1, 5)
+
+	//tickerutil.StopWatch_time(1, 5)
+
+	tickerutil.StopWatch_multi(1, 5)
+}
+
+func getwinapiutil() {
+
+	fmt.Println(winapiutil.GetModuleFileName())
+	fmt.Println(winapiutil.GetModulePath())
+	fmt.Println(winapiutil.GetDesktopPath())
+
+	/*
+		exePath := fmt.Sprintf("%s\\Internet Explorer\\iexplore.exe", winapiutil.GetProgramFilesPath())
+		winapiutil.ShellExecute(0, "open", exePath, "https://naver.com", "", winapiutil.SW_SHOW)
+	*/
+
+	/*
+		path := "C:\\cfgtest.cfg"
+		GameCount := 3
+		bret := winapiutil.SetProfileString("GameList", "GameCount", strconv.Itoa(GameCount), path)
+		if bret == true {
+			for i := 0; i < GameCount; i++ {
+				key := fmt.Sprintf("Gamekey%d", i)
+				value := fmt.Sprintf("Gamename%d", i)
+				winapiutil.SetProfileString("GameList", key, value, path)
+			}
+		}
+
+		strCount := winapiutil.GetProfileString("GameList", "GameCount", "", path)
+		count, err := strconv.Atoi(strCount)
+		if err == nil {
+			for i := 0; i < count; i++ {
+				key := fmt.Sprintf("Gamekey%d", i)
+				value := winapiutil.GetProfileString("GameList", key, "", path)
+				fmt.Println(value)
+			}
+		}
+	*/
+
+}
+
 func main() {
 
-	getsortutil()
+	//getwinapiutil()
+
+	//gettickerutil()
+
+	//getsortutil()
 
 	//getdownloadutil()
 

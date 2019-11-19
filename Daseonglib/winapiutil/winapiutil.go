@@ -2,7 +2,6 @@ package winapiutil
 
 import (
 	"errors"
-	_ "fmt"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -395,4 +394,62 @@ func SHGetSpecialFolderPath(hwndOwner HWND, lpszPath *uint16, csidl CSIDL, fCrea
 	ret, _, _ := procSHGetSpecialFolderPathW.Call(uintptr(hwndOwner), uintptr(unsafe.Pointer(lpszPath)), uintptr(csidl), uintptr(BoolToBOOL(fCreate)))
 
 	return ret != 0
+}
+
+func GetApiTest() {
+
+	/*
+		var url string
+		url = "https://www.naver.com"
+		if len(url) != 0 {
+			ShellExecute(0, "open", url, "", "", SW_SHOW)
+		}
+	*/
+
+	/*
+		sPath := "C:\\Windows\\System32\\notepad.exe"
+		if len(sPath) != 0 {
+			ShellExecute(0, "open", sPath, "", "", SW_SHOW)
+		}
+	*/
+
+	/*
+		hwnd, hPointer, hHandle := FindWindow("Notepad", "제목 없음 - Windows 메모장")
+		if hHandle == 0 {
+			println("nil")
+		} else {
+			println("hwnd")
+		}
+		if hwnd == 0 {
+			println("nil")
+		} else {
+			println("hwnd")
+		}
+		if hPointer == nil {
+			println("nil")
+		} else {
+			println("hwnd")
+		}
+	*/
+
+	/*
+		pid := GetPID("notepad.exe")
+		TerminateProcess(pid)
+	*/
+
+	/*
+		hwnd, _, _ := FindWindow("Notepad", "제목 없음 - Windows 메모장")
+		if hwnd != 0 {
+			PostMessage(hwnd, WM_QUIT, uintptr(0), uintptr(0))
+			PostMessage(hwnd, WM_CLOSE, uintptr(0), uintptr(0))
+		}
+	*/
+
+	/*
+		hwnd := FindWindowTitle("제목 없음 - Windows 메모장")
+		if hwnd != 0 {
+			PostMessage(hwnd, WM_QUIT, uintptr(0), uintptr(0))
+			PostMessage(hwnd, WM_CLOSE, uintptr(0), uintptr(0))
+		}
+	*/
 }

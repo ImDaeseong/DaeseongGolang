@@ -397,14 +397,25 @@ func gettickerutil() {
 
 	//tickerutil.StopWatch_time(1, 5)
 
-	tickerutil.StopWatch_multi(1, 5)
+	//tickerutil.StopWatch_multi(1, 5)
+
+	var URLS []string
+	URLS = append(URLS, "http://www.naver.com")
+	URLS = append(URLS, "http://www.naver.com")
+	URLS = append(URLS, "http://www.naver.com")
+	URLS = append(URLS, "http://www.naver.com")
+	tickerutil.Callurl(URLS, 10)
 }
 
 func getwinapiutil() {
 
-	fmt.Println(winapiutil.GetModuleFileName())
-	fmt.Println(winapiutil.GetModulePath())
-	fmt.Println(winapiutil.GetDesktopPath())
+	winapiutil.GetApiTest()
+
+	/*
+		fmt.Println(winapiutil.GetModuleFileName())
+		fmt.Println(winapiutil.GetModulePath())
+		fmt.Println(winapiutil.GetDesktopPath())
+	*/
 
 	/*
 		exePath := fmt.Sprintf("%s\\Internet Explorer\\iexplore.exe", winapiutil.GetProgramFilesPath())
@@ -412,7 +423,7 @@ func getwinapiutil() {
 	*/
 
 	/*
-		path := "C:\\cfgtest.cfg"
+		path := "C:\\gameinfo.ini"
 		GameCount := 3
 		bret := winapiutil.SetProfileString("GameList", "GameCount", strconv.Itoa(GameCount), path)
 		if bret == true {
@@ -433,7 +444,6 @@ func getwinapiutil() {
 			}
 		}
 	*/
-
 }
 
 func main() {

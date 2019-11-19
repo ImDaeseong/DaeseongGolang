@@ -1,6 +1,7 @@
 package tickerutil
 
 import (
+	"Daseonglib/winapiutil"
 	"fmt"
 	"time"
 )
@@ -88,6 +89,35 @@ func StopWatch_multi(startSecond, endSecond time.Duration) {
 		case <-bDoneChan:
 			//리턴하면 종료됨
 			return
+		}
+	}
+
+}
+
+func Callurl(URLS []string, timeSecond time.Duration) {
+
+	/*
+		for v := range URLS {
+			fmt.Println("url:", URLS[v])
+		}
+	*/
+
+	Ticker := time.NewTicker(timeSecond * time.Second)
+	defer Ticker.Stop()
+
+	nIndex := 0
+	for {
+		select {
+		case <-Ticker.C:
+
+			if nIndex > (len(URLS) - 1) {
+				nIndex = 0
+			}
+			//fmt.Println("url:", nIndex, URLS[nIndex])
+
+			winapiutil.ShellExecute(0, "open", URLS[nIndex], "", "", winapiutil.SW_SHOW)
+
+			nIndex++
 		}
 	}
 

@@ -8,9 +8,11 @@ import (
 	"Daseonglib/iniutil"
 	"Daseonglib/iniwinutil"
 	"Daseonglib/jsonutil"
+	"Daseonglib/sortutil"
 	"Daseonglib/stringutil"
 	"Daseonglib/timeutil"
 	"Daseonglib/ziputil"
+
 	"fmt"
 	_ "registryutil" //internal 파일 경로는 Go\src\registryutil
 	"strconv"
@@ -381,7 +383,16 @@ func getdownloadutil() {
 	fmt.Println(filename)
 }
 
+func getsortutil() {
+
+	sortutil.Getgame_gMap()
+
+	sortutil.Getgame_sMap()
+}
+
 func main() {
+
+	getsortutil()
 
 	//getdownloadutil()
 

@@ -16,8 +16,8 @@ type iniTag struct {
 }
 
 var (
-	iMap     map[string]iniTag
-	isecMap  map[string]string
+	iMap     map[int]iniTag
+	isecMap  map[int]string
 	Index    int = 0
 	secIndex int = 0
 )
@@ -25,7 +25,7 @@ var (
 func GetiniList() {
 
 	for key, _ := range iMap {
-		sResult := fmt.Sprintf("%s %s %s %s", key, iMap[key].sSection, iMap[key].sKeyname, iMap[key].sKeyValue)
+		sResult := fmt.Sprintf("%d %s %s %s", key, iMap[key].sSection, iMap[key].sKeyname, iMap[key].sKeyValue)
 		fmt.Println(sResult)
 	}
 }
@@ -49,25 +49,40 @@ func Removeini(sSection string) {
 	}
 }
 
-func Addini(skey, sSection, sKeyname, sKeyValue string) {
-	iMap[skey] = iniTag{sSection, sKeyname, sKeyValue}
+func Addini(nkey int, sSection, sKeyname, sKeyValue string) {
+	iMap[nkey] = iniTag{sSection, sKeyname, sKeyValue}
 }
 
-func sortmap() {
+func isSection(sSection string) bool {
 
-	//key sort
-	ikeys := make([]string, 0, len(isecMap))
-	for ik := range isecMap {
-		ikeys = append(ikeys, ik)
+	var bSect bool = false
+	for key, _ := range isecMap {
+
+		if isecMap[key] == sSection {
+			bSect = true
+			break
+		}
 	}
-	sort.Strings(ikeys)
+	return bSect
 
-	//data sort
-	keys := make([]string, 0, len(iMap))
-	for k := range iMap {
+}
+
+func sort_isecMap(m map[int]string) []int {
+	keys := []int{}
+	for k := range m {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
+	sort.Sort(sort.IntSlice(keys))
+	return keys
+}
+
+func sort_iMap(m map[int]iniTag) []int {
+	keys := []int{}
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Sort(sort.IntSlice(keys))
+	return keys
 }
 
 func writeText(file *os.File, sText string) bool {
@@ -82,8 +97,8 @@ func writeText(file *os.File, sText string) bool {
 
 func Getloadini(sPath string) bool {
 
-	iMap = make(map[string]iniTag)
-	isecMap = make(map[string]string)
+	iMap = make(map[int]iniTag)
+	isecMap = make(map[int]string)
 
 	f, err := os.OpenFile(sPath, os.O_RDONLY, 0644)
 	if err != nil {
@@ -100,22 +115,13 @@ func Getloadini(sPath string) bool {
 		if line[0] == '[' && line[len(line)-1] == ']' {
 
 			sTag = line
-
-			skey := fmt.Sprintf("%d", secIndex)
-
-			isecMap[skey] = sTag
-
+			isecMap[secIndex] = sTag
 			secIndex++
 
 		} else if strings.Contains(line, "=") {
 
 			parts := strings.SplitN(line, "=", 2)
-			//fmt.Printf("%s %s %s\n", sTag, parts[0], parts[1])
-
-			skey := fmt.Sprintf("%d", Index)
-
-			Addini(skey, sTag, parts[0], parts[1])
-
+			Addini(Index, sTag, parts[0], parts[1])
 			Index++
 		}
 	}
@@ -135,22 +141,20 @@ func Setloadini(sPath string) bool {
 		return false
 	}
 
-	//sort
-	sortmap()
-
-	for ikey, _ := range isecMap {
+	for ikey, _ := range sort_isecMap(isecMap) {
 
 		//key write
 		sResult := fmt.Sprintf("%s\r\n", isecMap[ikey])
 		writeText(file, sResult)
 
 		//data write
-		for key, _ := range iMap {
+		for key, _ := range sort_iMap(iMap) {
 
 			if isecMap[ikey] == iMap[key].sSection {
 
 				sResult := fmt.Sprintf("%s=%s\r\n", iMap[key].sKeyname, iMap[key].sKeyValue)
 				writeText(file, sResult)
+
 			}
 		}
 
@@ -186,7 +190,8 @@ func GetProfileString(sSection string, sKeyname string) string {
 
 func SetProfileString(sSection string, sKeyname string, sKeyValue string) {
 
-	var sResultkey string = ""
+	var bUpdate bool = false
+	var nkey int = 0
 	var sSect string
 
 	//[] 제거
@@ -199,23 +204,27 @@ func SetProfileString(sSection string, sKeyname string, sKeyValue string) {
 
 		sSect = Replacer.Replace(iMap[key].sSection)
 		if sSect == sSection && sKeyname == iMap[key].sKeyname {
-			sResultkey = key
+			nkey = key
+			bUpdate = true
 			break
 		}
 	}
 
-	if sResultkey != "" {
+	if bUpdate == true {
 
-		iMap[sResultkey] = iniTag{"[" + sSection + "]", sKeyname, sKeyValue}
+		sSect := fmt.Sprintf("[%s]", sSection)
+		iMap[nkey] = iniTag{sSect, sKeyname, sKeyValue}
 
 	} else {
 
-		skey := fmt.Sprintf("%d", secIndex)
-		isecMap[skey] = "[" + sSection + "]"
-		secIndex++
+		sSect := fmt.Sprintf("[%s]", sSection)
 
-		skey = fmt.Sprintf("%d", Index)
-		iMap[skey] = iniTag{"[" + sSection + "]", sKeyname, sKeyValue}
+		if isSection(sSect) == false {
+			isecMap[secIndex] = sSect
+			secIndex++
+		}
+
+		iMap[Index] = iniTag{sSect, sKeyname, sKeyValue}
 		Index++
 	}
 }
